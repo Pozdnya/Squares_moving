@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vilmate</title>
+</head>
+<body>
+  <style>
+    body {
+      display: flex; /* add flex container */
+      align-items: center; /* centering items */
+      flex-direction: column; /* directions of items are column */
+    }
+
+    .square {
+      width: 100px;
+      height: 100px;
+      border: 1px solid #000;
+      display: flex; /* add flex container */
+      align-items: center; /* centering items on vertical line*/
+      justify-content: center; /* centering items on horizontal line*/
+      margin: 8px;
+      cursor: pointer; /* add cursor */
+    }
+  </style>
+  <script>
+    let positions = []; //array of positions
+    const container = document.querySelector('body'); //container for squares
+
+    document.addEventListener('DOMContentLoaded', handleAddSquare); //add squares to container when DOM is loaded
+
+    function handleMoveSquare() {
+      const square = document.getElementById(this.id); //get square
+      const squareId = Number(square.id); //get square id
+      const squarePosition = positions.indexOf(squareId); //get square position in array
+
+      if (!square.classList.contains('active')) { //if square is not active
+        positions.splice(squarePosition, 1); //remove square from array
+        positions.unshift(squareId); //add square to the beginning of array
+        square.classList.add('active'); //add active class to square
+      } else {
+        let actives = [...document.querySelectorAll('.active')].map(item => Number(item.id)); //get all active squares
+        let activeSquareId = actives.splice(actives.indexOf(squareId), 1)[0]; //get active square id
+        positions = positions.filter(item => !actives.includes(item)); //remove active squares from array
+        positions = [...positions, activeSquareId] //add active square to the end of array
+        positions = positions.sort((a, b) => a - b); //sort array
+        actives = []; //clear actives array
+        square.classList.remove('active'); //remove active class from square
+      }
+
+      positions.forEach((position, index) => { //move squares
+        const square = document.getElementById(position); //get square
+        container.appendChild(square); //move square to the container
+      });
+    }
+
+    function handleAddSquare() { //add squares to container
+      for (let i = 0; i < 100; i++) { //add 100 squares
+        const square = document.createElement('div'); //create square
+
+        square.id = i; //set square id
+        square.innerHTML = `Square ${i}`; //set square text
+        square.classList.add('square'); //add square class
+        container.appendChild(square); //add square to the container
+        positions.push(i); //add square id to array
+
+        square.addEventListener('click', handleMoveSquare); //add click event to square
+      }
+    }
+  </script>
+</body>
+</html>
